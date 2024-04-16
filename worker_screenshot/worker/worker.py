@@ -43,7 +43,7 @@ async def process(data: dict) -> None:
             await bot.edit_message_media(
                 media=InputMediaPhoto(
                     media=FSInputFile(path=os.path.abspath("error.png")),
-                    caption="Страница не найдена"
+                    caption="Страница не найдена",
                 ),
                 chat_id=parsed_request.chat_id,
                 message_id=parsed_request.message_id,
@@ -68,7 +68,9 @@ async def process(data: dict) -> None:
                 )
                 end = datetime.datetime.now(ZoneInfo("UTC"))
                 diff = end - parsed_request.date
-                text = f"{title}\nВеб-сайт: {page}\nВремя выполнения: {diff.seconds} cек."
+                text = (
+                    f"{title}\nВеб-сайт: {page}\nВремя выполнения: {diff.seconds} cек."
+                )
                 await bot.edit_message_media(
                     media=InputMediaPhoto(
                         media=BufferedInputFile(file, "img.png"), caption=text

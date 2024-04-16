@@ -1,6 +1,7 @@
 """
 Команды бота
 """
+
 import os
 import re
 
@@ -70,7 +71,7 @@ async def message_handler(msg: types.Message) -> None:
                 await bot.edit_message_media(
                     media=InputMediaPhoto(
                         media=FSInputFile(path=os.path.abspath("error.png")),
-                        caption="Сервис временно недоступен"
+                        caption="Сервис временно недоступен",
                     ),
                     chat_id=message.chat_id,
                     message_id=message.message_id,
