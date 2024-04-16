@@ -31,7 +31,7 @@
   - `docker-compose up -d --build`
   
 ## Примечание:
-Бот развернут через [пулинг](https://habr.com/ru/companies/otus/articles/786754/#),
+Бот развернут через [Polling](https://habr.com/ru/companies/otus/articles/786754/#),
 для прода нужен Webhook.
 
 ## Автор:
