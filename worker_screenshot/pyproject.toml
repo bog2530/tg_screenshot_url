@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "worker-screenshot"
+version = "0.1.0"
+description = ""
+authors = ["Bogdan Shumskiy <bog2530@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "^3.4.1"
+alembic = "^1.12.1"
+asyncpg = "^0.29.0"
+greenlet = "^3.0.3"
+dramatiq = { extras = ["rabbitmq"], version = "^1.15.0" }
+pydantic = "^2.5.3"
+pydantic-settings = "^2.1.0"
+minio = "^7.2.3"
+playwright = "^1.42.0"
+sqlalchemy = "^2.0.25"
+tzdata = "2023.4"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

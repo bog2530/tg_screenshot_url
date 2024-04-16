@@ -1,0 +1,108 @@
+version: "3.9"
+
+
+services:
+
+  application:
+    build: ./tg_screenshot
+    container_name: tg
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      worker:
+        condition: service_started
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      QUEUE_NAME: ${QUEUE_NAME}
+      LOGGER: ${LOGGER}
+    networks:
+      - news_events_service
+
+  worker:
+    build: ./worker_screenshot
+    container_name: worker
+    command: sh -c "poetry run alembic upgrade head && poetry run dramatiq main"
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_started
+      minio:
+        condition: service_started
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      QUEUE_NAME: ${QUEUE_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      MINIO_URL: minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      LOGGER: ${LOGGER}
+    networks:
+      - news_events_service
+
+  db:
+    container_name: postgres_tg
+    image: postgres:15.2-alpine3.17
+    restart: always
+    ports:
+      - 15432:${POSTGRES_PORT}
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: screenshot
+      TZ: Europe/Moscow
+    volumes:
+      - ./not_for_git/postgres/volumes:/var/lib/postgresql/data
+    networks:
+      - news_events_service
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: file-storage
+    command: server /data --console-address ":9001"
+    restart: always
+    ports:
+      - "9001:9001"
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      TZ: Europe/Moscow
+    volumes:
+      - ./not_for_git/file_storage:/data
+    networks:
+      - news_events_service
+
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    volumes:
+      - ./not_for_git/rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+    networks:
+      - news_events_service
+
+networks:
+  news_events_service:
+    external: false

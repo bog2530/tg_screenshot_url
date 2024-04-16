@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "tg-screenshot"
+version = "0.1.0"
+description = ""
+authors = ["Bogdan Shumskiy <bog2530@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "^3.4.1"
+pydantic = "^2.5.3"
+pydantic-settings = "^2.1.0"
+dramatiq = { extras = ["rabbitmq"], version = "^1.15.0" }
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
